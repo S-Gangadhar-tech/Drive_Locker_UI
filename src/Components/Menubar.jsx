@@ -52,9 +52,13 @@ const Menubar = () => {
     }
     const handleLogout = async () => {
         try {
-            axios.defaults.withCredentials = true;
-            const res = await axios.post(`${BackendURL}/auth/logout`)
+            console.log(BackendURL);
+
+            // axios.defaults.withCredentials = true;
+            const res = await axios.post(`${BackendURL}/auth/logout`, { withCredentials: true })
+
             if (res.status === 200) {
+                console.log(res);
                 setIsLoggedin(false)
                 setUserData(false)
                 toast.success("logout succes")
@@ -63,7 +67,7 @@ const Menubar = () => {
                 toast.error("logout failed")
             }
         } catch (error) {
-            toast.error(error.response.error.message)
+            toast.error(error?.response?.error?.message || "logout failed")
         }
     }
 

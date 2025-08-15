@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { NotesContext } from "../context/NotesContext";
-import Note from "../Components/Note";
+import Note from "../Components/NoteListItem";
 import CustomButton from "../Util/Button";
 import NoteUtil from "../Util/NoteUtil";
 
@@ -61,7 +61,7 @@ const NotesService = () => {
 
     return (
         <div>
-            <h1>NotesService</h1>
+            <h1>Notes</h1>
 
             <div>
                 {notes.length > 0 ? (

@@ -6,17 +6,20 @@ import ResetPassword from "./Pages/ResetPassword";
 import Home from "./Pages/Home";
 import { useContext } from "react";
 import { AppContext } from "./context/AppContext";
-// import Notes from "./Pages/Notes";
 import Files from "./Pages/Files";
 import CreatePasskey from "./Pages/CreatePasskey";
-import Services from "./Pages/Services";
-import NotesService from "./Pages/NotesService";
+import Features from "./Pages/Features";
+import Notes from "./Pages/Notes";
 
-// Protect routes for logged-in users only
 const ProtectedRoute = ({ children }) => {
-  const { isLoggedin } = useContext(AppContext);
+  const { isLoggedin, isLoading } = useContext(AppContext);
+
+  // Wait until the authentication check is complete
+  if (isLoading) {
+    return <div>Loading...</div>; // Render a loading message while auth is being checked
+  }
+
   if (!isLoggedin) {
-    // Not logged in, redirect to login
     return <Navigate to="/login" replace />;
   }
   return children;
@@ -24,21 +27,30 @@ const ProtectedRoute = ({ children }) => {
 
 // Restrict routes to users NOT logged in (e.g., login page)
 const PublicRoute = ({ children }) => {
-  const { isLoggedin } = useContext(AppContext);
+  const { isLoggedin, isLoading } = useContext(AppContext);
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Also wait here to avoid a flash of content
+  }
+
   if (isLoggedin) {
-    // Logged in, redirect to home
     return <Navigate to="/" replace />;
   }
   return children;
 };
 
 const App = () => {
+  const { isLoading } = useContext(AppContext);
+
+  if (isLoading) {
+    return <div>Loading App...</div>;
+  }
+
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
+        {/* ... your routes remain the same ... */}
         <Route index element={<Home />} />
-
-        {/* Login only for NOT logged in users */}
         <Route
           path="login"
           element={
@@ -47,8 +59,7 @@ const App = () => {
             </PublicRoute>
           }
         />
-
-        {/* Email Verify protected, only logged-in users */}
+        {/* All other routes are protected */}
         <Route
           path="email-verify"
           element={
@@ -57,8 +68,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
-        {/* Reset Password protected, only logged-in users */}
         <Route
           path="reset-password"
           element={
@@ -66,10 +75,10 @@ const App = () => {
           }
         />
         <Route
-          path="/Services"
+          path="/Features"
           element={
             <ProtectedRoute>
-              <Services />
+              <Features />
             </ProtectedRoute>
           }
         />
@@ -77,7 +86,7 @@ const App = () => {
           path="/Notes"
           element={
             <ProtectedRoute>
-              <NotesService />
+              <Notes />
             </ProtectedRoute>
           }
         />
@@ -89,9 +98,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
-
-
         <Route
           path="/Files"
           element={

@@ -1,69 +1,73 @@
+// src/context/AppContext.js
 import { createContext, useEffect, useState } from "react";
 import { AppConstants } from "../Util/constants";
+import authService from "../services/AuthService";
 import axios from "axios";
-import { toast } from "react-toastify";
 
 export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
     const BackendURL = AppConstants.BACKEND_URL;
-    const [isLoggedin, setIsLoggedin] = useState(false)
-    const [userData, setUserData] = useState(false)
+    const [isLoggedin, setIsLoggedin] = useState(false);
+    const [userData, setUserData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true); // New loading state
 
     axios.defaults.withCredentials = true;
+
     const getUserdata = async () => {
         try {
-            const res = await axios.get(`${BackendURL}/user/profile`)
-            if (res.status === 200) {
-
-                setUserData(res.data);
-                console.log(res.data);
-
-            }
-            else {
-                toast.error("unable to retrieve profile ")
+            const userProfile = await authService.getProfile(BackendURL);
+            if (userProfile) {
+                setUserData(userProfile);
+                console.log(userProfile);
+            } else {
+                setUserData(null);
             }
         } catch (error) {
-            toast.error(error.message)
+            setUserData(null);
         }
-    }
+    };
 
-
-    const getAuthState = async () => {
+    const initializeAuth = async () => {
         try {
-            const res = await axios.get(`${BackendURL}/auth/is-authenticated`);
-            if (res.status === 200 && res.data === true) {
-                setIsLoggedin(true);
-                await getUserdata()
-            }
-            else {
-                setIsLoggedin(false)
-            }
+            const isLoggedInResult = await authService.isAuthenticated(BackendURL);
+            setIsLoggedin(isLoggedInResult);
 
+            if (isLoggedInResult) {
+                await getUserdata();
+            } else {
+                setUserData(null);
+            }
         } catch (error) {
-            console.error(error.response.data.message || "unable to login");
-
-            setIsLoggedin(false)
+            setIsLoggedin(false);
+            setUserData(null);
+        } finally {
+            setIsLoading(false); // Set loading to false after all checks, regardless of outcome
         }
-    }
+    };
 
     useEffect(() => {
-        getAuthState()
-    }, [])
+        initializeAuth();
+    }, []);
 
     const contextValue = {
         BackendURL,
         isLoggedin,
-        setIsLoggedin,
         userData,
+        setIsLoggedin,
+        getUserdata,
         setUserData,
-        getUserdata
-    }
-    return (
+        isLoading // Add isLoading to context value for other components to use
+    };
 
+    // --- Conditional rendering based on loading state ---
+    if (isLoading) {
+        return <div>Loading...</div>; // You can replace this with a proper loading spinner
+    }
+
+    return (
         <AppContext.Provider value={contextValue}>
             {props.children}
         </AppContext.Provider>
-
-    )
-}
+    );
+};

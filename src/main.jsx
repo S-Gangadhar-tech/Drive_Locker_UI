@@ -25,7 +25,6 @@ createRoot(document.getElementById('root')).render(
     <AppContextProvider>
       <NotesProvider>
         <FileProvider>
-
           < App />
         </FileProvider>
       </NotesProvider>

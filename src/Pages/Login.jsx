@@ -30,6 +30,8 @@ const Login = () => {
 
                 // register api
                 const res = await axios.post(`${BackendURL}/user/register`, formData);
+
+
                 if (res.status === 201) {
                     navigate("/")
                     toast.success("Account created succes")
@@ -38,9 +40,10 @@ const Login = () => {
                 }
                 // setUser(res.data);
             } else {
+
                 //login api
                 const res = await axios.post(`${BackendURL}/auth/login`, formData)
-                // console.log(res);
+                console.log(res);
 
                 if (res.status === 200) {
                     setIsLoggedin(true)
@@ -52,6 +55,7 @@ const Login = () => {
                 }
             }
         } catch (error) {
+            console.log(error);
             setLoading(false)
             toast.error(error.response?.data.message)
         }

@@ -1,6 +1,6 @@
 // src/context/FileContext.jsx
 import { createContext, useState, useContext } from 'react'; // ❌ Remove useEffect import
-import FileService from "../Pages/FileService";
+import FileService from "../services/FileService";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios'; // Add axios import

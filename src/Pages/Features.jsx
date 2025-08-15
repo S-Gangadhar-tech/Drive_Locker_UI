@@ -11,7 +11,7 @@ const Services = () => {
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
             <div className="text-center">
-                <h1 className="text-4xl font-extrabold text-gray-900 mb-8">Our Services</h1>
+                <h1 className="text-4xl font-extrabold text-gray-900 mb-8">DriveLocker Features</h1>
 
                 <div className="flex flex-col sm:flex-row gap-8">
                     {/* Notes Service Card */}

@@ -30,7 +30,7 @@ const Header = () => {
         <p className="text-lg text-gray-500 mb-8 max-w-md">
           Let’s start your product tour
         </p>
-        <CustomButton text={"Get Started"} handleOnclick={() => { navigate("/services") }} />
+        <CustomButton text={"Get Started"} handleOnclick={() => { navigate("/features") }} />
       </div>
     </div>
   );

@@ -4,56 +4,71 @@ import { FaSave, FaTimes, FaStar } from "react-icons/fa";
 import { toast } from 'react-toastify';
 
 const NoteUtil = ({ note, onClose }) => {
-    // Determine if we're in "update" mode based on if a note prop is provided
     const isUpdateMode = !!note;
 
-    // Initialize state with note data for update, or empty for create
     const [formData, setFormData] = useState({
         title: isUpdateMode ? note.title : "",
         notes: isUpdateMode ? note.notes : "",
         isFavourate: isUpdateMode ? note.isFavourate : false
     });
 
-    // Destructure context methods
+    // --- New state for title validation error ---
+    const [titleError, setTitleError] = useState("");
+
     const { createNote, updateNote } = useContext(NotesContext);
 
-    // Update form data if the note prop changes (e.g., when editing a different note)
     useEffect(() => {
         if (isUpdateMode && note) {
             setFormData({
                 title: note.title,
                 notes: note.notes,
-                isFavourate: note.isFavourate || false // Default to false if undefined
+                isFavourate: note.isFavourate || false
             });
         }
     }, [note, isUpdateMode]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData(prevData => ({
-            ...prevData,
-            // Handle checkbox input differently from text input
+        const newFormData = {
+            ...formData,
             [name]: type === 'checkbox' ? checked : value
-        }));
+        };
+        setFormData(newFormData);
+
+        // --- Validate title as the user types ---
+        if (name === 'title') {
+            if (value.includes(' ')) {
+                setTitleError("Title cannot contain spaces.");
+            } else if (!value.trim()) {
+                setTitleError("Title cannot be empty.");
+            } else {
+                setTitleError(""); // Clear the error if input is valid
+            }
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Handle empty form data
+        // --- Final validation before submission ---
+        // This is a safety check in case the user submits without typing anything.
         if (!formData.title.trim() || !formData.notes.trim()) {
             toast.warn("Title and notes cannot be empty.");
             return;
         }
 
+        if (formData.title.includes(' ')) {
+            toast.error("Title cannot contain spaces.");
+            return;
+        }
+
+        // Proceed with form submission if all checks pass
         if (isUpdateMode) {
-            // The isFavourate property is now included in formData
             await updateNote(note.id, formData);
         } else {
             await createNote(formData);
         }
 
-        // Close the form
         onClose();
     };
 
@@ -72,8 +87,12 @@ const NoteUtil = ({ note, onClose }) => {
                         value={formData.title}
                         onChange={handleChange}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     />
+                    {/* --- Display the validation error here --- */}
+                    {titleError && (
+                        <p className="text-red-500 text-sm mt-1">{titleError}</p>
+                    )}
                 </div>
                 <div className="mb-4">
                     <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
@@ -87,7 +106,6 @@ const NoteUtil = ({ note, onClose }) => {
                     />
                 </div>
 
-                {/* --- Add to Favourites Checkbox (only in update mode) --- */}
                 {isUpdateMode && (
                     <div className="mb-6 flex items-center">
                         <input
