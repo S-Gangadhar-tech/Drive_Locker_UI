@@ -1,4 +1,3 @@
-// src/services/notesService.js
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -29,8 +28,6 @@ const notesService = {
     createNote: async (BackendURL, newNote) => {
         try {
             const response = await axios.post(`${BackendURL}/notes/create-notes`, newNote);
-            // console.log(response);
-
             toast.success("Note created successfully! 📝");
             return response.data;
         } catch (error) {
@@ -63,4 +60,4 @@ const notesService = {
     }
 };
 
-export default notesService;
+export default notesService; // ✅ Make sure this line exists

@@ -1,9 +1,8 @@
-// src/context/FileContext.jsx
-import { createContext, useState, useContext } from 'react'; // ❌ Remove useEffect import
+import { createContext, useState, useContext, useEffect } from 'react';
 import FileService from "../services/FileService";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios'; // Add axios import
+import axios from 'axios';
 import { AppContext } from './AppContext';
 
 // Create a context
@@ -12,66 +11,89 @@ const FileContext = createContext();
 export const useFiles = () => useContext(FileContext);
 
 export const FileProvider = ({ children }) => {
+    const { BackendURL, userData } = useContext(AppContext);
+
+    useEffect(() => {
+        // Only fetch if userData has loaded and there is a user
+        if (userData) {
+            fetchUserFiles();
+        }
+    }, [userData]); // Add userData to the dependency array
+    // Check if userData and hasPasskey exist before accessing.
+    // This is important to prevent errors if userData is not yet loaded.
+    const hasPasskey = userData ? userData.hasPasskey : null;
+
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const { BackendURL } = useContext(AppContext)
-    const navigate = useNavigate()
-
-    // ❌ Remove this useEffect block
-    // useEffect(() => {
-    //     fetchUserFiles();
-    // }, []);
+    const navigate = useNavigate();
 
     const sendVerificationOtp = async () => {
         try {
             axios.defaults.withCredentials = true;
-            const res = await axios.post(`${BackendURL}/auth/send-otp`)
-
+            const res = await axios.post(`${BackendURL}/auth/send-otp`);
             if (res.status === 200) {
-                navigate("/email-verify")
-                toast.success("otp sent success")
+                navigate("/email-verify");
+                toast.success("OTP sent successfully");
             } else {
-                toast.error("unable to send otp")
+                toast.error("Unable to send OTP");
             }
         } catch (error) {
-            console.log(error);
-            toast.error(error.response.data.message || "failed to send otp")
+            console.error(error);
+            toast.error(error.response?.data?.message || "Failed to send OTP");
         }
-    }
+    };
+
+    // Centralized check for passkey
+    const checkPasskeyAndRedirect = () => {
+        if (hasPasskey === false) {
+            toast.info("Please create a passkey to use this service.");
+            navigate("/CreatePasskey");
+            return true; // Indicates a redirection occurred
+        }
+        return false; // Indicates no redirection needed
+    };
 
     const fetchUserFiles = async () => {
+        if (checkPasskeyAndRedirect()) {
+            return;
+        }
+
         setLoading(true);
         setError(null);
         try {
             const data = await FileService.getUserFiles();
             setFiles(data);
         } catch (err) {
+            console.log(err);
+
             if (err.status === 401) {
-                toast("verify your email to use this service")
-                await sendVerificationOtp()
+                toast.info("Please verify your email to use this service");
+                await sendVerificationOtp();
             }
-            setError(err);
+            setError(err.response?.data?.message || "Failed to fetch files");
         } finally {
             setLoading(false);
         }
     };
 
     const handleFileUpload = async (file, passkey) => {
+        if (checkPasskeyAndRedirect()) {
+            return;
+        }
+
         setLoading(true);
         setError(null);
         try {
             const response = await FileService.fileUpload(file, passkey);
-            console.log(response);
             await fetchUserFiles();
             return response;
         } catch (err) {
-            console.log(err);
             if (err.status === 401) {
-                toast("verify your email to use this service")
-                await sendVerificationOtp()
+                toast.info("Please verify your email to use this service");
+                await sendVerificationOtp();
             }
-            setError(err);
+            setError(err.response?.data?.message || "File upload failed");
             throw err;
         } finally {
             setLoading(false);
@@ -79,22 +101,36 @@ export const FileProvider = ({ children }) => {
     };
 
     const handleDeleteFiles = async (publicIds) => {
+        if (checkPasskeyAndRedirect()) {
+            return;
+        }
+
         setLoading(true);
         setError(null);
         try {
             const response = await FileService.deleteFiles(publicIds);
-            console.log(response);
             setFiles(currentFiles =>
                 currentFiles.filter(file => !publicIds.includes(file.publicId))
             );
+            toast.success(response.message || "Files deleted successfully.");
             return response;
         } catch (err) {
-            setError(err);
+            // Corrected error handling
+            setError(err.response?.data?.message || "File deletion failed");
+            toast.error(err.response?.data?.message || "File deletion failed");
             throw err;
         } finally {
             setLoading(false);
         }
     };
+
+    // Re-added the useEffect hook to fetch files on component mount
+    useEffect(() => {
+        // Only fetch if userData has loaded and there is a user
+        if (userData) {
+            fetchUserFiles();
+        }
+    }, [userData]); // Add userData to the dependency array
 
     const value = {
         files,

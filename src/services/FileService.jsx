@@ -27,8 +27,12 @@ const fileUpload = async (file, passkey) => {
 const getUserFiles = async () => {
     try {
         const response = await axios.get(`${API_URL}/`);
+        console.log("files fetched " + response.data);
+
         return response.data; // List of files
     } catch (error) {
+        console.log("error fetching");
+
         throw error.response?.data || 'Failed to retrieve user files.';
     }
 };

@@ -17,7 +17,7 @@ const ResetPassword = () => {
 
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
-    const [otpStr, setOtpStr] = useState(""); // After submit OTP, store as string here
+    const [otpStr, setOtpStr] = useState("");
     const [isEmailSent, setIsEmailSent] = useState(false);
     const [isOtpStep, setIsOtpStep] = useState(false);
     const [isPasswordStep, setIsPasswordStep] = useState(false);
@@ -25,22 +25,19 @@ const ResetPassword = () => {
     const [password, setPassword] = useState("");
     const inputRefs = useRef([]);
 
-    // Autofocus on first OTP input
     useEffect(() => {
         if (isOtpStep && inputRefs.current[0]) {
             inputRefs.current[0].focus();
         }
     }, [isOtpStep]);
 
-    // OTP input handling
     const handleOtpChange = (e, idx) => {
         const val = e.target.value;
         if (/^[0-9]?$/.test(val)) {
             const newOtp = [...otp];
             newOtp[idx] = val;
             setOtp(newOtp);
-            if (val !== "" && idx < OTP_LENGTH - 1)
-                inputRefs.current[idx + 1].focus();
+            if (val !== "" && idx < OTP_LENGTH - 1) inputRefs.current[idx + 1].focus();
         }
     };
 
@@ -56,13 +53,11 @@ const ResetPassword = () => {
     };
 
     const handleOtpKeyDown = (e, idx) => {
-        if (e.key === "Backspace" && otp[idx] === "" && idx > 0)
-            inputRefs.current[idx - 1].focus();
+        if (e.key === "Backspace" && otp[idx] === "" && idx > 0) inputRefs.current[idx - 1].focus();
     };
 
     axios.defaults.withCredentials = true;
 
-    // Step 1: Send reset OTP to email
     const handleSendOtp = async (e) => {
         e.preventDefault();
         if (!email) {
@@ -86,7 +81,6 @@ const ResetPassword = () => {
         }
     };
 
-    // Step 2: Submit OTP, set otpStr and move to password step
     const handleOtpSubmit = (e) => {
         e.preventDefault();
         const str = otp.join("");
@@ -99,7 +93,6 @@ const ResetPassword = () => {
         setIsPasswordStep(true);
     };
 
-    // Step 3: Reset password with OTP and email
     const handleResetPassword = async (e) => {
         e.preventDefault();
         if (!password || password.length < 6) {
@@ -128,93 +121,86 @@ const ResetPassword = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex justify-center items-center py-8 px-2">
-            <div className="w-full max-w-md bg-white shadow-xl rounded-xl px-6 py-9 flex flex-col gap-8">
+        <div className="flex items-center justify-center px-4 bg-transparent min-h-0">
+            <div className="w-full max-w-lg bg-gray-900/80 shadow-2xl rounded-xl px-6 py-16 flex flex-col gap-8 border border-gray-700 backdrop-blur-md">
                 {/* Heading */}
-                <h2 className="text-2xl md:text-3xl font-bold text-green-600 text-center tracking-tight mb-4 flex items-center gap-3 justify-center">
+                <h2 className="text-2xl md:text-3xl font-bold text-emerald-400 text-center tracking-tight mb-4 flex items-center gap-3 justify-center">
                     <RiLockPasswordLine size={32} /> Reset Password
                 </h2>
 
-                {/* Step 1: Ask for Email */}
                 {!isEmailSent && (
                     <form onSubmit={handleSendOtp} className="space-y-6">
                         <div>
-                            <label className="block text-gray-600 mb-1 font-medium">
+                            <label className="block text-gray-400 mb-1 font-medium">
                                 Registered Email Address
                             </label>
-                            <div className="flex items-center border rounded-lg px-3">
+                            <div className="flex items-center border border-gray-700 rounded-lg px-3 bg-gray-800">
                                 <MdOutlineEmail className="text-gray-500" size={22} />
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
-                                    className="w-full px-3 py-2 border-none outline-none bg-transparent focus:ring-0"
+                                    className="w-full px-3 py-2 border-none outline-none bg-transparent focus:ring-0 text-white"
                                     placeholder="Email"
                                     autoFocus
                                 />
                             </div>
                         </div>
                         <CustomButton
-                            text={
-                                loading ? "Sending..." : (
-                                    <span className="flex items-center gap-2">
-                                        <FiMail size={20} />
-                                        Send OTP
-                                    </span>
-                                )
-                            }
+                            text={loading ? (
+                                "Sending..."
+                            ) : (
+                                <span className="flex items-center gap-2">
+                                    <FiMail size={20} />
+                                    Send OTP
+                                </span>
+                            )}
                             type="submit"
                             disabled={loading}
                         />
                     </form>
                 )}
 
-                {/* Step 2: OTP Submit */}
                 {isOtpStep && (
                     <form onSubmit={handleOtpSubmit} className="space-y-4">
-                        <p className="text-gray-700 text-center mb-2">
+                        <p className="text-gray-400 text-center mb-2">
                             Enter the 6 digit code sent to <span className="font-semibold">{email}</span>
                         </p>
-                        {/* OTP Fields */}
+
                         <div className="flex justify-between gap-1 sm:gap-2 mb-3">
                             {otp.map((digit, idx) => (
                                 <input
                                     key={idx}
-                                    ref={el => (inputRefs.current[idx] = el)}
+                                    ref={(el) => (inputRefs.current[idx] = el)}
                                     type="text"
                                     inputMode="numeric"
                                     maxLength={1}
                                     value={digit}
-                                    onChange={e => handleOtpChange(e, idx)}
-                                    onKeyDown={e => handleOtpKeyDown(e, idx)}
+                                    onChange={(e) => handleOtpChange(e, idx)}
+                                    onKeyDown={(e) => handleOtpKeyDown(e, idx)}
                                     onPaste={handleOtpPaste}
                                     disabled={loading}
-                                    className="w-10 sm:w-12 h-10 sm:h-12 text-center border-2 border-gray-400 focus:border-green-600 rounded-lg text-xl focus:outline-none transition"
+                                    className="w-10 sm:w-12 h-10 sm:h-12 text-center border-2 border-gray-600 focus:border-emerald-400 rounded-lg text-xl focus:outline-none bg-gray-800 text-white transition"
                                 />
                             ))}
                         </div>
-                        <CustomButton
-                            text="Continue"
-                            type="submit"
-                            disabled={loading}
-                        />
+                        <CustomButton text="Continue" type="submit" disabled={loading} />
                     </form>
                 )}
 
-                {/* Step 3: New password input */}
                 {isPasswordStep && (
                     <form onSubmit={handleResetPassword} className="space-y-4">
                         <div>
-                            <label className="block text-gray-600 mb-1 font-medium">New Password</label>
-                            <div className="flex items-center border rounded-lg px-3">
+                            <label className="block text-gray-400 mb-1 font-medium">New Password</label>
+                            <div className="flex items-center border border-gray-700 rounded-lg px-3 bg-gray-800">
                                 <RiLockPasswordLine className="text-gray-400" size={21} />
                                 <input
                                     type="password"
-                                    className="w-full px-3 py-2 border-none outline-none bg-transparent focus:ring-0"
+                                    className="w-full px-3 py-2 border-none outline-none bg-transparent focus:ring-0 text-white"
                                     placeholder="Enter new password"
                                     value={password}
-                                    onChange={e => setPassword(e.target.value)}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     minLength={6}
                                     disabled={loading}
                                     required
@@ -229,12 +215,15 @@ const ResetPassword = () => {
                     </form>
                 )}
 
-                {/* Success: Done! */}
                 {isSuccess && (
                     <div className="flex flex-col items-center gap-4 pt-8 pb-4">
-                        <span className="text-green-600 text-4xl"><FiMail /></span>
-                        <p className="text-lg font-medium text-gray-700 text-center">
-                            Password reset successful.<br />You will be redirected to login...
+                        <span className="text-emerald-400 text-4xl">
+                            <FiMail />
+                        </span>
+                        <p className="text-lg font-medium text-gray-300 text-center">
+                            Password reset successful.
+                            <br />
+                            You will be redirected to login...
                         </p>
                     </div>
                 )}

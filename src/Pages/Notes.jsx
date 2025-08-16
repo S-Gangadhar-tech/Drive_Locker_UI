@@ -19,7 +19,7 @@ const NotesService = () => {
     // Fetch notes when the component first mounts
     useEffect(() => {
         fetchNotes();
-    }, [fetchNotes]);
+    }, []);
 
     // Handlers for UI actions
     const handleCreateClick = () => {
@@ -45,9 +45,9 @@ const NotesService = () => {
     };
 
     const handleNoteSelect = (id) => {
-        setSelectedNoteIds(prevSelected =>
+        setSelectedNoteIds((prevSelected) =>
             prevSelected.includes(id)
-                ? prevSelected.filter(noteId => noteId !== id)
+                ? prevSelected.filter((noteId) => noteId !== id)
                 : [...prevSelected, id]
         );
     };
@@ -60,12 +60,12 @@ const NotesService = () => {
     };
 
     return (
-        <div>
-            <h1>Notes</h1>
+        <div className="bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700 p-8 max-w-4xl mx-auto min-h-[30vh] text-gray-200">
+            <h1 className="text-3xl font-bold mb-6 text-white">Notes</h1>
 
-            <div>
+            <div className="space-y-4 mb-6">
                 {notes.length > 0 ? (
-                    notes.map(note => (
+                    notes.map((note) => (
                         <Note
                             key={note.id}
                             ele={note}
@@ -76,22 +76,23 @@ const NotesService = () => {
                         />
                     ))
                 ) : (
-                    <p>No notes found. Create one!</p>
+                    <p className="text-gray-400">No notes found. Create one!</p>
                 )}
             </div>
 
-            <CustomButton
-                text="Create New Note"
-                handleOnclick={handleCreateClick}
-            />
+            <div className="flex flex-wrap gap-4 justify-center">
+                <CustomButton text="Create New Note" handleOnclick={handleCreateClick} />
 
-            {select && <CustomButton
-                text={`Delete Selected (${selectedNoteIds.length})`}
-                handleOnclick={handleDeleteSelected}
-                disabled={selectedNoteIds.length === 0}
-            />}
+                {select && (
+                    <CustomButton
+                        text={`Delete Selected (${selectedNoteIds.length})`}
+                        handleOnclick={handleDeleteSelected}
+                        disabled={selectedNoteIds.length === 0}
+                    />
+                )}
 
-            <CustomButton text={select ? "Deselect" : "Select Notes"} handleOnclick={toggleSelectMode} />
+                <CustomButton text={select ? "Deselect" : "Select Notes"} handleOnclick={toggleSelectMode} />
+            </div>
 
             {showNoteForm && (
                 <NoteUtil

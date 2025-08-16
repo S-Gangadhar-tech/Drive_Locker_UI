@@ -19,7 +19,7 @@ export const AppContextProvider = (props) => {
             const userProfile = await authService.getProfile(BackendURL);
             if (userProfile) {
                 setUserData(userProfile);
-                console.log(userProfile);
+                // console.log(userProfile);
             } else {
                 setUserData(null);
             }

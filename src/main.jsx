@@ -12,7 +12,8 @@ createRoot(document.getElementById('root')).render(
   <Router >
     <ToastContainer
       position="top-center"
-      toastClassName="centered-toast"
+      toastClassName="bg-gray-900 text-white border border-emerald-500 shadow-xl rounded-xl px-6 py-4 font-semibold"
+      bodyClassName="text-center"
       autoClose={3000}
       hideProgressBar={false}
       newestOnTop={false}
@@ -22,6 +23,7 @@ createRoot(document.getElementById('root')).render(
       draggable
       pauseOnHover
     />
+
     <AppContextProvider>
       <NotesProvider>
         <FileProvider>

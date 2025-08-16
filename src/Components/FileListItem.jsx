@@ -1,8 +1,6 @@
-// src/components/FileListItem.jsx
 import React from 'react';
 
 const FileListItem = ({ file, isSelected, onFileSelect }) => {
-
     const handleDownload = async () => {
         try {
             // Fetch the file data as a blob
@@ -31,26 +29,46 @@ const FileListItem = ({ file, isSelected, onFileSelect }) => {
     };
 
     return (
-        <li key={file.publicId} style={{ border: '1px solid #ccc', margin: '10px 0', padding: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+        <li className="border border-gray-700 rounded-lg mb-4 p-4 bg-gray-800 text-gray-200">
+            <div className="flex items-center space-x-4">
                 <input
                     type="checkbox"
                     checked={isSelected}
                     onChange={() => onFileSelect(file.publicId)}
-                    style={{ marginRight: '10px' }}
+                    className="accent-cyan-500 w-5 h-5 cursor-pointer"
                 />
-                <div>
-                    <p><strong>File Name:</strong> {file.fileName}</p>
-                    <p><strong>File Type:</strong> {file.fileType}</p>
-                    <p><strong>Uploaded At:</strong> {new Date(file.createdAt).toLocaleDateString()}</p>
-                    {/* Add a "View File" link that opens in a new tab */}
-                    <a href={file.fileUrl} target="_blank" rel="noopener noreferrer" style={{ marginRight: '10px' }}>
-                        View File
-                    </a>
-                    {/* Use a button to trigger the programmatic download */}
-                    <button onClick={handleDownload} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
-                        Download File
-                    </button>
+                <div className="flex flex-col">
+                    <p>
+                        <strong className="text-white">File Name:</strong> {file.fileName}
+                    </p>
+                    <p>
+                        <strong className="text-white">File Type:</strong> {file.fileType}
+                    </p>
+                    <p>
+                        <strong className="text-white">Uploaded At:</strong>{' '}
+                        {new Date(file.createdAt).toLocaleDateString()}
+                    </p>
+                    <div className="flex items-center space-x-4 mt-2">
+                        {/* View File Link */}
+                        <a
+                            href={file.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-cyan-400 hover:underline"
+                        >
+                            View File
+                        </a>
+
+                        {/* Download Button */}
+                        <button
+                            onClick={handleDownload}
+                            className="text-cyan-400 hover:underline bg-transparent border-0 p-0 cursor-pointer"
+                            aria-label={`Download ${file.fileName}`}
+                            type="button"
+                        >
+                            Download File
+                        </button>
+                    </div>
                 </div>
             </div>
         </li>

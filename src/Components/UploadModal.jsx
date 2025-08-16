@@ -1,40 +1,26 @@
-// src/components/UploadModal.jsx
 import FileUploadForm from './FileUploadForm';
-
-const modalStyles = {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    zIndex: 1000,
-    width: '90%',
-    maxWidth: '400px',
-};
-
-const backdropStyles = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 999,
-};
 
 const UploadModal = ({ isOpen, onClose, onUpload, loading }) => {
     if (!isOpen) return null;
 
     return (
         <>
-            <div style={backdropStyles} onClick={onClose} />
-            <div style={modalStyles}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h2>Upload a File</h2>
-                    <button onClick={onClose} style={{ border: 'none', background: 'transparent', fontSize: '1.5rem', cursor: 'pointer' }}>
+            {/* Backdrop */}
+            <div
+                className="fixed inset-0 bg-black bg-opacity-60 z-50"
+                onClick={onClose}
+            />
+
+            {/* Modal container */}
+            <div className="fixed top-1/2 left-1/2 z-50 w-11/12 max-w-md p-6 bg-gray-900/90 backdrop-blur-md rounded-xl border border-gray-700 shadow-2xl transform -translate-x-1/2 -translate-y-1/2">
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-white text-xl font-semibold">Upload a File</h2>
+                    <button
+                        onClick={onClose}
+                        className="text-white text-2xl font-bold leading-none hover:text-red-500 transition-colors"
+                        aria-label="Close upload modal"
+                        type="button"
+                    >
                         &times;
                     </button>
                 </div>
