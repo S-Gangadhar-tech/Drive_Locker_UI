@@ -4,14 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { AppContext } from './AppContext';
-
+import { AppConstants } from "../Util/constants";
 // Create a context
 const FileContext = createContext();
 
 export const useFiles = () => useContext(FileContext);
 
 export const FileProvider = ({ children }) => {
-    const { BackendURL, userData } = useContext(AppContext);
+    const BackendURL = AppConstants.BACKEND_URL;
+    const { userData } = useContext(AppContext);
 
     useEffect(() => {
         // Only fetch if userData has loaded and there is a user

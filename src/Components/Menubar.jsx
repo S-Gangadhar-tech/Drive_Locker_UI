@@ -133,13 +133,13 @@ const Menubar = () => {
                 className="flex items-center space-x-2 md:space-x-3 cursor-pointer"
                 onClick={() => navigate("/")}
             >
-                {/* <motion.img
+                <motion.img
                     src={assets.home}
                     alt="Drivelocker Logo"
                     className="h-7 w-7 md:h-8 md:w-8 transition-transform rounded rounded-5"
                     whileHover={{ scale: 1.1 }}
                     style={{ color: "white" }}
-                /> */}
+                />
                 <span className="text-lg md:text-xl font-semibold text-green-400 select-none">
                     DriveLocker
                 </span>

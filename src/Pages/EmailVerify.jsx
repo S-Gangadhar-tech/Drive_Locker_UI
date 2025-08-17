@@ -6,8 +6,6 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MdEmail } from "react-icons/md";
-import { AiFillCheckCircle } from "react-icons/ai";
-import { MdError } from "react-icons/md";
 
 const OTP_LENGTH = 6;
 

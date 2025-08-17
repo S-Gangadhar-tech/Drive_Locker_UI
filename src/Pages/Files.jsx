@@ -13,8 +13,7 @@ const Files = () => {
         loading,
         error,
         handleFileUpload,
-        handleDeleteFiles,
-        fetchUserFiles,
+        handleDeleteFiles
     } = useFiles();
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);

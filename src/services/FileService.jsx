@@ -1,8 +1,8 @@
 // src/services/FileService.jsx
 import axios from 'axios';
+import { AppConstants } from "../Util/constants";
 
-// Get the base URL from environment variables
-const API_URL = "http://localhost:8080/api/v1.0/files";
+const API_URL = `${AppConstants.BACKEND_URL}/files`;
 
 // Configure axios with credentials to handle cookies and authentication
 axios.defaults.withCredentials = true;

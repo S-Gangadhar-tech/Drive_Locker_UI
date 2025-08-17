@@ -1,14 +1,13 @@
-import { createContext, useState, useCallback, useContext, useEffect } from "react";
+import { createContext, useState, useCallback } from "react";
 import notesService from "../services/NotesService";
-import { AppContext } from "./AppContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import axios from 'axios';
-
+import { AppConstants } from "../Util/constants";
 export const NotesContext = createContext();
 
 export const NotesProvider = ({ children }) => {
-    const { BackendURL, userData } = useContext(AppContext);
+    const BackendURL = AppConstants.BACKEND_URL;
     const [notes, setNotes] = useState([]);
     const navigate = useNavigate();
 
